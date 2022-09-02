@@ -1,0 +1,2 @@
+Por meio do comando "pyinstaller --onefile --noconsole nomedoarquivo.py" ( sem aspas)
+é possível transformar arquivos em .py em arquivos executáveis
