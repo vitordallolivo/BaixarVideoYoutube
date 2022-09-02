@@ -22,13 +22,13 @@ def videos():
     baixarvideo.download(pasta)
     
 def audios():
-    video = YouTube(Pegarlink())
+    video = YouTube(Pegarlink()) # Chama a função de Pegar Link
     pasta=pastas()
     
-    baixaraudio = video.streams.get_audio_only()
-    arquivo_saida=baixaraudio.download(pasta)
-    base, ext = os.path.splitext(arquivo_saida)
-    nome_novo= base + '.mp3'
+    baixaraudio = video.streams.get_audio_only() # Pega somente o audio do vídeo
+    arquivo_saida=baixaraudio.download(pasta) # baixa o arquivo dentro da pasta em mp4
+    base, ext = os.path.splitext(arquivo_saida) 
+    nome_novo= base + '.mp3' # formata o arquivo para mp3
     os.rename(arquivo_saida, nome_novo)
 
 def Pegarlink():
@@ -37,7 +37,7 @@ def Pegarlink():
     return url
 
 root = tk.Tk()
-root.geometry("196x120")
+root.geometry("196x120") # Define o Tamanho da tela
 root.title("Baixando coisa do YouTube")
 
 
@@ -45,12 +45,12 @@ txt = Label(root,text="Coloque o Link abaixo")
 
 txt.pack()
 
-link = tk.Entry(root)
+link = tk.Entry(root) # Caixa de Texto
 link.pack()
 
-mp3botao = tk.Button(text="MP3",command= audios)
+mp3botao = tk.Button(text="MP3",command= audios) # Botão MP3
 mp3botao.pack()
-mp4botao = tk.Button(text="MP4",command= videos)
+mp4botao = tk.Button(text="MP4",command= videos) # Botão MP4
 mp4botao.pack()    
   
 root.mainloop()
