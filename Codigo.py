@@ -33,7 +33,6 @@ def audios():
 
 def Pegarlink():
     url = link.get()
-    messagebox.showinfo("URL", url)
     return url
 
 root = tk.Tk()
