@@ -1,56 +1,78 @@
-"""
-Created on Fri Aug 26 20:22:40 2022
-
-@author: Vitor
-"""
-
-from pytube import YouTube,streams
 import os
 import tkinter as tk
-from tkinter import filedialog
-from tkinter import messagebox
-from tkinter import *
+from tkinter import filedialog, messagebox
+from pytube import YouTube
 
-def pastas():
-    pasta = filedialog.askdirectory() ## escolhe destinatário
-    return pasta
 
-def videos():
-    video = YouTube(Pegarlink())
-    pasta=pastas()
-    baixarvideo = video.streams.get_highest_resolution()
-    baixarvideo.download(pasta)
-    
-def audios():
-    video = YouTube(Pegarlink()) # Chama a função de Pegar Link
-    pasta=pastas()
-    
-    baixaraudio = video.streams.get_audio_only() # Pega somente o audio do vídeo
-    arquivo_saida=baixaraudio.download(pasta) # baixa o arquivo dentro da pasta em mp4
-    base, ext = os.path.splitext(arquivo_saida) 
-    nome_novo= base + '.mp3' # formata o arquivo para mp3
-    os.rename(arquivo_saida, nome_novo)
+def choose_destination_folder():
+    folder_path = filedialog.askdirectory()
+    return folder_path
 
-def Pegarlink():
-    url = link.get()
-    return url
+
+def download_video():
+    try:
+        video_url = video_url_entry.get()
+        destination_folder = choose_destination_folder()
+        if not video_url:
+            messagebox.showwarning("Warning", "Please enter a valid YouTube video URL.")
+            return
+        if not destination_folder:
+            return
+        youtube = YouTube(video_url, on_progress_callback=progress_callback)
+        video = youtube.streams.get_highest_resolution()
+        video.download(destination_folder)
+        messagebox.showinfo("Success", "Video downloaded successfully!")
+    except Exception as e:
+        messagebox.showerror("Error", str(e))
+
+
+def download_audio():
+    try:
+        video_url = video_url_entry.get()
+        destination_folder = choose_destination_folder()
+        if not video_url:
+            messagebox.showwarning("Warning", "Please enter a valid YouTube video URL.")
+            return
+        if not destination_folder:
+            return
+        youtube = YouTube(video_url, on_progress_callback=progress_callback)
+        audio = youtube.streams.get_audio_only()
+        file_path = audio.download(destination_folder)
+        base, ext = os.path.splitext(file_path)
+        new_file_path = base + '.mp3'
+        os.rename(file_path, new_file_path)
+        messagebox.showinfo("Success", "Audio downloaded successfully!")
+    except Exception as e:
+        messagebox.showerror("Error", str(e))
+
+
+def progress_callback(stream, chunk, bytes_remaining):
+    total_size = stream.filesize
+    bytes_downloaded = total_size - bytes_remaining
+    percentage = (bytes_downloaded / total_size) * 100
+    progress_label.config(text="Downloading... {:.2f}%".format(percentage))
+
 
 root = tk.Tk()
-root.geometry("196x120") # Define o Tamanho da tela
-root.title("Baixando coisa do YouTube")
+root.geometry("300x150")
+root.title("YouTube Downloader")
 
+video_url_label = tk.Label(root, text="Enter YouTube video URL:")
+video_url_label.pack()
 
-txt = Label(root,text="Coloque o Link abaixo")
+video_url_entry = tk.Entry(root)
+video_url_entry.pack()
 
-txt.pack()
+button_frame = tk.Frame(root)
+button_frame.pack()
 
-link = tk.Entry(root) # Caixa de Texto
-link.pack()
+video_button = tk.Button(button_frame, text="Download Video", command=download_video)
+video_button.pack(side=tk.LEFT, padx=5)
 
-mp3botao = tk.Button(text="MP3",command= audios) # Botão MP3
-mp3botao.pack()
-mp4botao = tk.Button(text="MP4",command= videos) # Botão MP4
-mp4botao.pack()    
-  
+audio_button = tk.Button(button_frame, text="Download Audio", command=download_audio)
+audio_button.pack(side=tk.LEFT, padx=5)
+
+progress_label = tk.Label(root, text="")
+progress_label.pack()
+
 root.mainloop()
-
